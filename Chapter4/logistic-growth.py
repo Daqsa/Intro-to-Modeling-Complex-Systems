@@ -1,28 +1,18 @@
-# 4.3 Simulating Discrete-Time Models with One Variable
-# x_t = ax_{t-1} + b, x_0 = 1 (4.12)
-
 from pylab import *
 
-
 """
-when x is declared outside a function and you say x = x + 1 in a 
-function body, Python defaults to assume x as a local variable and 
-spits out error that local variable is referenced before assignment. 
-To solve the local variable problem, use a class. 
-I don't want to use global variables. 
-Implement a exponential difference equation 
-x_t = a * x_{t-1} + b
+Implement logistic growth 
 """
-class ExponentialModel(object):
+class LogisticModel(object):
     """
-    a, b : parameters
+    a, K : parameters
     x : initial state variable
     result : time series of state variable
     timeSteps : list of time
     """
-    def __init__(self, a, b, x0):
+    def __init__(self, a, K, x0):
         self.a = a
-        self.b = b
+        self.K = K
         self.x = x0
         self.result = [self.x]
         self.t = 0
@@ -35,15 +25,16 @@ class ExponentialModel(object):
     
     # update state variable according to difference equation
     def update(self):
-        self.x = self.a * self.x + self.b
+        coefficient = ((1-self.a) / self.K) * self.x + self.a
+        self.x = coefficient * self.x
         self.t += 1
 
 
 if __name__ == "__main__":
-    a = 1.1
-    b = -0.05
-    x0 = 1
-    myModel = ExponentialModel(a, b, x0)
+    a = 1.5
+    K = 100 
+    x0 = 5
+    myModel = LogisticModel(a, K, x0)
     timeSpan = 30
     while myModel.t < timeSpan:
         myModel.update()

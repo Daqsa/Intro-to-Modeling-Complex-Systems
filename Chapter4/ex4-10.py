@@ -1,28 +1,21 @@
-# 4.3 Simulating Discrete-Time Models with One Variable
-# x_t = ax_{t-1} + b, x_0 = 1 (4.12)
-
 from pylab import *
 
-
 """
-when x is declared outside a function and you say x = x + 1 in a 
-function body, Python defaults to assume x as a local variable and 
-spits out error that local variable is referenced before assignment. 
-To solve the local variable problem, use a class. 
-I don't want to use global variables. 
-Implement a exponential difference equation 
-x_t = a * x_{t-1} + b
+Implement a model where population growth ratio is highest at a 
+certain optimal population size, but it goes down as the population 
+deviates from the optimal size. 
 """
-class ExponentialModel(object):
+class QuadraticLogisticModel(object):
     """
-    a, b : parameters
+    P, r : parameters
     x : initial state variable
     result : time series of state variable
     timeSteps : list of time
     """
-    def __init__(self, a, b, x0):
+    def __init__(self, P, r, a, x0):
+        self.P = P
+        self.r = r
         self.a = a
-        self.b = b
         self.x = x0
         self.result = [self.x]
         self.t = 0
@@ -35,19 +28,22 @@ class ExponentialModel(object):
     
     # update state variable according to difference equation
     def update(self):
-        self.x = self.a * self.x + self.b
+        coefficient = -a * (self.x-self.P) ** 2 + self.r
+        self.x = coefficient * self.x
         self.t += 1
 
 
 if __name__ == "__main__":
-    a = 1.1
-    b = -0.05
-    x0 = 1
-    myModel = ExponentialModel(a, b, x0)
-    timeSpan = 30
+    P = 1
+    r = 1.3
+    a = 1e-20
+    x0 = 0.7
+    myModel = QuadraticLogisticModel(P, r, a, x0)
+    timeSpan = 100
     while myModel.t < timeSpan:
         myModel.update()
         myModel.observe()
+        print(myModel.x)
     xlabel("Time")
     ylabel("x")
     plot(myModel.timeSteps, myModel.result)
